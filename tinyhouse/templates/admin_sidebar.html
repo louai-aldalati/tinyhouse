@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Paneli Sidebar</title>
+    <link rel="stylesheet" href="{% static 'css/admin_sidebar.css' %}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <!-- Profile Link -->
+        <div class="sidebar-profile-link">
+            <a href="/profile">Benim Profilim</a>
+        </div>
+
+        <h3>Admin Paneli</h3>
+        <ul>
+            <li>
+                <a href="/dashboard/admin_dashboard"
+                   class="{% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+                    Ana Ekran
+                </a>
+            </li>
+            <li>
+                <a href="/admin_user_management"
+                   class="{% if request.resolver_match.url_name == 'admin_user_management' %}active{% endif %}">
+                    Kullanıcı Yönetimi
+                </a>
+            </li>
+            <li>
+                <a href="/reservations/admin_reservation_management"
+                   class="{% if request.resolver_match.url_name == 'admin_reservation_management' %}active{% endif %}">
+                    Rezervasyon Yönetimi
+                </a>
+            </li>
+            <li>
+                <a href="/listings/admin_listing_management"
+                   class="{% if request.resolver_match.url_name == 'admin_listing_management' or request.resolver_match.url_name == 'admin_listing_add' %}active{% endif %}">
+                    İlan Yönetimi
+                </a>
+            </li>
+            <li>
+                <a href="/payments/admin_payment_management"
+                   class="{% if request.resolver_match.url_name == 'admin_payment_management' %}active{% endif %}">
+                    Ödeme Yönetimi
+                </a>
+            </li>
+            <li>
+                <a href="/notifications/admin_notifications"
+                   class="{% if request.resolver_match.url_name == 'admin_notifications' %}active{% endif %}">
+                    Bildirimlerim
+                </a>
+            </li>
+            <li>
+                <a href="/reviews/admin_comments_and_ratings"
+                   class="{% if request.resolver_match.url_name == 'admin_comments_and_ratings' %}active{% endif %}">
+                    Yorum Yönetimi
+                </a>
+            </li>
+            <li>
+                <a href="/reports/admin_statistics_and_reporting"
+                   class="{% if request.resolver_match.url_name == 'admin_statistics_and_reporting' %}active{% endif %}">
+                    İstatistik ve Raporlama
+                </a>
+            </li>
+        </ul>
+    </nav>
+</body>
+</html>

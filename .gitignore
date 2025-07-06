@@ -1,0 +1,56 @@
+# Virtual environments
+env/
+venv/
+.venv/
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Translation files
+*.mo
+*.pot
+
+# Local DB
+*.sqlite3
+*.db
+
+# Secret files
+.env
+local_settings.py
+
+# Editor settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs and temp files
+*.log
+*.bak
+*.tmp
+*.swp
+*~
+
+# Dependency locks
+Pipfile.lock
+poetry.lock
+
+# Django
+/staticfiles/
+/*/migrations/*.py[cod]
+*/migrations/__pycache__/
+
+# Media uploads
+/media/
+/tinyhouse_photos/
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-error.log*

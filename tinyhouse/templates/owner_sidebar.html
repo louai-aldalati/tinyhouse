@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ev Sahibi Paneli Sidebar</title>
+    <link rel="stylesheet" href="{% static 'css/owner_sidebar.css' %}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <!-- Profile Link -->
+        <div class="sidebar-profile-link">
+            <a href="/profile">Benim Profilim</a>
+        </div>
+
+        <h3>Ev Sahibi Paneli</h3>
+        <ul>
+            <li>
+                <a href="/dashboard/owner_dashboard"
+                   class="{% if request.resolver_match.url_name == 'owner_dashboard' %}active{% endif %}">
+                    Ana Ekran
+                </a>
+            </li>
+            <li>
+                <a href="/listings/owner_listing_management"
+                   class="{% if request.resolver_match.url_name == 'owner_listing_management' or request.resolver_match.url_name == 'owner_listing_edit' %}active{% endif %}">
+                    İlan Yönetimi
+                </a>
+            </li>
+            <li>
+                <a href="/reservations/owner_reservation_management"
+                   class="{% if request.resolver_match.url_name == 'owner_reservation_management' %}active{% endif %}">
+                    Rezervasyon Yönetimi
+                </a>
+            </li>
+            <li>
+                <a href="/payments/owner_payment_management"
+                   class="{% if request.resolver_match.url_name == 'owner_payment_management' %}active{% endif %}">
+                    Ödeme Bilgileri
+                </a>
+            </li>
+            <li>
+                <a href="/notifications/owner_notifications"
+                   class="{% if request.resolver_match.url_name == 'owner_notifications' %}active{% endif %}">
+                    Bildirimlerim
+                </a>
+            </li>
+            <li>
+                <a href="/reviews/owner_comments_and_ratings"
+                   class="{% if request.resolver_match.url_name == 'owner_comments_and_ratings' %}active{% endif %}">
+                    Yorumlar ve Puanlar
+                </a>
+            </li>
+        </ul>
+    </nav>
+</body>
+</html>

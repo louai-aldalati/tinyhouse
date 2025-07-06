@@ -1,0 +1,124 @@
+/* Body */
+body {
+    background-color: #f3f4f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Container */
+.profile-container {
+    background-color: #fff;
+    border-radius: 0.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 2rem;
+    max-width: 500px;
+    margin: 3rem auto;
+}
+
+/* Title */
+.profile-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Inputs */
+.profile-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #374151;
+    background-color: #f9fafb;
+}
+
+.profile-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.3);
+    background-color: #fff;
+}
+
+/* Button */
+.profile-button {
+    width: 100%;
+    background-color: #6366f1;
+    color: #fff;
+    font-weight: 500;
+    padding: 0.75rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-top: 1rem;
+}
+
+.profile-button:hover {
+    background-color: #4f46e5;
+}
+
+/* Return Link */
+.return-button {
+    margin-top: 1rem;
+    text-align: center;
+}
+
+.return-button a {
+    display: inline-block;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #6366f1;
+    padding: 0.5rem 1rem;
+    border: 1px solid #6366f1;
+    border-radius: 0.375rem;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.return-button a:hover {
+    background-color: #6366f1;
+    color: #ffffff;
+}
+
+/* Shared signup-input */
+.signup-input {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    margin-bottom: 1rem;
+    font-size: 1rem;
+    color: #374151;
+}
+
+.signup-input:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+}
+
+/* Alerts */
+.alert {
+    max-width: 400px;
+    margin: 1rem auto;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    list-style-type: disc;
+    list-style-position: inside;
+}
+
+.alert-success {
+    background-color: var(--success-bg);
+    color: var(--success-text);
+    border: 1px solid var(--success-text);
+}
+
+.alert-error {
+    background-color: var(--error-bg);
+    color: var(--error-text);
+    border: 1px solid var(--error-text);
+}

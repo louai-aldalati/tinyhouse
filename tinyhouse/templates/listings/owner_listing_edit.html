@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İlan Düzenle</title>
+    <link rel="stylesheet" href="{% static 'css/listings/owner_listing_edit.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'owner_sidebar.html' %}
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">İlan Düzenle</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}<li>{{ m }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="card">
+                <form action="{% url 'owner_listing_edit' house.id %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+                        <div class="form-group">
+                            <label class="form-label" for="title">Başlık</label>
+                            <input class="form-input" type="text" id="title" name="title" value="{{ house.title }}" required>
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="form-label" for="location">Konum</label>
+                            <textarea class="form-input" id="location" name="location" rows="3" required>{{ house.location }}</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="start_date">Başlangıç Tarihi</label>
+                            <input class="form-input" type="date" id="start_date" name="start_date" value="{{ house.start_date|date:'Y-m-d' }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="end_date">Bitiş Tarihi</label>
+                            <input class="form-input" type="date" id="end_date" name="end_date" value="{{ house.end_date|date:'Y-m-d' }}" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="max_tenant">MAX Kişi Sayısı</label>
+                            <input class="form-input" type="number" id="max_tenant" name="max_tenant" value="{{ house.max_tenant }}" min="1" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="price_per_night">Fiyat (₺)</label>
+                            <input class="form-input" type="number" id="price_per_night" name="price_per_night" value="{{ house.price_per_night }}" step="0.01" required>
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="form-label" for="description">Açıklama</label>
+                            <textarea class="form-input" id="description" name="description" rows="3" required>{{ house.description }}</textarea>
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="form-label" for="is_active">Durum</label>
+                            <select class="form-select" id="is_active" name="is_active">
+                                <option value="active" {% if house.is_active %}selected{% endif %}>Aktif</option>
+                                <option value="inactive" {% if not house.is_active %}selected{% endif %}>Pasif</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group md:col-span-2">
+                            <label class="form-label" for="image">Yeni Resimler Ekle</label>
+                            <input class="form-file" type="file" id="image" name="image" multiple accept="image/*">
+                        </div>
+
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn-primary">Değişikleri Kaydet</button>
+                    </div>
+                </form>
+                <div class="return-button">
+                    <a href="{% url 'owner_listing_management' %}">Ana Sayfaya Dön</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

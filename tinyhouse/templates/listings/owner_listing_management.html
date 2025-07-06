@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İlan Yönetimi</title>
+    <link rel="stylesheet" href="{% static 'css/listings/owner_listing_management.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        <!-- Sidebar -->
+        {% include 'owner_sidebar.html' %}
+
+        <!-- Main Content -->
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">İlan Yönetimi</h2>
+
+            <!-- عرض الرسائل إن وجدت -->
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}
+                        <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- عرض الأخطاء إن وجدت -->
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- Yeni İlan Ekleme -->
+            <div class="card">
+                <h3 class="card-title mb-4">Yeni İlan Ekle</h3>
+                <form action="{% url 'owner_listing_management' %}" method="POST" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="form-group">
+                            <label class="form-label" for="title">Başlık</label>
+                            <input class="form-input" type="text" id="title" name="title" placeholder="İlan başlığı">
+                        </div>
+                        <div class="form-group md:col-span-2">
+                            <label class="form-label" for="location">Konum</label>
+                            <textarea class="form-input" id="location" name="location" rows="3" placeholder="Ev Konumu"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="start_date">Başlangıç Tarihi</label>
+                            <input class="form-input" type="date" id="start_date" name="start_date">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="end_date">Bitiş Tarihi</label>
+                            <input class="form-input" type="date" id="end_date" name="end_date">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="max_tenant">MAX Kişi Sayısı</label>
+                            <input class="form-input" type="number" id="max_tenant" name="max_tenant" placeholder="Evde Kalabilecek En Fazla Kişi Sayısı">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="price_per_night">Fiyat (₺)</label>
+                            <input class="form-input" type="number" id="price_per_night" name="price_per_night" placeholder="Günlük fiyat">
+                        </div>
+                        <div class="form-group md:col-span-2">
+                            <label class="form-label" for="description">Açıklama</label>
+                            <textarea class="form-input" id="description" name="description" rows="3" placeholder="Ev açıklaması"></textarea>
+                        </div>
+                        <div class="form-group md:col-span-2">
+                            <label class="form-label" for="is_active">Durum</label>
+                            <select class="form-select" id="is_active" name="is_active">
+                                <option value="active">Aktif</option>
+                                <option value="inactive">Pasif</option>
+                            </select>
+                        </div>
+                        <!-- Yeni Resim Yükleme Alanı -->
+                        <div class="form-group md:col-span-2">
+                            <label class="form-label" for="image">Resimler (Resimler Beraber Ekleyeceksiniz)</label>
+                            <input class="form-file" type="file" id="image" name="image" multiple accept="image/*">
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <button type="submit" class="btn-primary">İlanı Kaydet</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Mevcut İlanlar Listesi -->
+            <div class="card">
+                <h3 class="card-title mb-4">Mevcut İlanlarınız</h3>
+
+                <!-- Arama Çubuğu -->
+                <div class="form-group mb-4">
+                    <label class="form-label" for="search">İlan Ara</label>
+                    <form method="GET" class="inline-block w-full">
+                        <input class="form-input" type="text" id="search" name="search" placeholder="Anahtar kelime ile ara..." value="{{ search_query }}">
+                    </form>
+                </div>
+
+                <div class="table-container">
+                    <table id="listingsTable">
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>Başlık</th>
+                                <th>Fiyat (₺)</th>
+                                <th>Tarih Aralığı</th>
+                                <th>Durum</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for house in houses %}
+                                <tr>
+                                    <td>{{ house.id }}</td>
+                                    <td>{{ house.title }}</td>
+                                    <td>{{ house.price_per_night }}</td>
+                                    <td>{{ house.start_date }} - {{ house.end_date }}</td>
+                                    <td>{% if house.is_active %}Aktif{% else %}Pasif{% endif %}</td>
+                                    <td class="space-x-2">
+                                        <a href="{% url 'owner_listing_edit' house.id %}" class="btn-operation text-sm">Düzenle</a>
+                                        <form method="POST" style="display:inline">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="delete_id" value="{{ house.id }}">
+                                            <button type="submit" class="btn-operation text-sm">Sil</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center py-4">Gösterilecek ilan yok.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JavaScript kodu: Tüm sütunlarda arama yapılması için güncellendi -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('search');
+            const table = document.getElementById('listingsTable');
+            const tbody = table.querySelector('tbody');
+
+            searchInput.addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                const rows = tbody.getElementsByTagName('tr');
+
+                Array.from(rows).forEach(function(row) {
+                    const cells = row.getElementsByTagName('td');
+                    let match = false;
+                    Array.from(cells).forEach(function(cell) {
+                        if (cell.textContent.toLowerCase().includes(filter)) {
+                            match = true;
+                        }
+                    });
+                    row.style.display = match ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

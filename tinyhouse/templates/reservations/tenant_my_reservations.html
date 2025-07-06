@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervasyonlarım</title>
+    <link rel="stylesheet" href="{% static 'css/reservations/tenant_my_reservations.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'tenant_sidebar.html' %}
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Rezervasyonlarım</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}
+                        <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <h3 class="section-title">Ödenmemiş Rezervasyonlar</h3>
+            <div class="grid-list">
+                {% for reservation, payment in unpaid_reservations %}
+                    <div class="reservation-card">
+                        <div class="reservation-header">
+                            {{ reservation.tiny_house }}
+                            <span class="status-completed" style="float: right;">
+                                Rezervasyon Durumu: {{ reservation.reservation_status }} / Ödeme Durumu: {{ payment.payment_status }}
+                            </span>
+                        </div>
+                        <div class="reservation-content">
+                            <p><strong>Konum:</strong> {{ reservation.tiny_house.location }}</p>
+                            <p><strong>Ev Sahibi:</strong> {{ reservation.tiny_house.owner.username }}</p>
+                            <p><strong>Giriş Tarihi:</strong> {{ reservation.start_date|date:"d F Y" }}</p>
+                            <p><strong>Çıkış Tarihi:</strong> {{ reservation.end_date|date:"d F Y" }}</p>
+                            <p><strong>Toplam Tutar:</strong> {% if payment %}₺{{ payment.amount }}{% else %}-{% endif %}</p>
+                        </div>
+                        <div class="reservation-actions">
+                            <a href="{% url 'tenant_listing_details' reservation.tiny_house.id %}" class="button-secondary">Ev Detayları İncele</a>
+                            <form method="post" action="{% url 'tenant_my_reservations' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="pay">
+                                <button type="submit" class="button-agree">Ödemeyi Yap</button>
+                            </form>
+                            <form method="post" action="{% url 'tenant_my_reservations' %}" style="margin-left: 8px;">
+                                {% csrf_token %}
+                                <input type="hidden" name="reservation_id" value="{{ reservation.id }}">
+                                <input type="hidden" name="action" value="cancel">
+                                <button type="submit" class="button-danger">İptal Et</button>
+                            </form>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Ödenmemiş rezervasyonunuz bulunmamaktadır.</p>
+                {% endfor %}
+            </div>
+
+            <h3 class="section-title">Ödenmiş Rezervasyonlar</h3>
+            <div class="grid-list">
+                {% for reservation, payment in paid_reservations %}
+                    <div class="reservation-card">
+                        <div class="reservation-header">
+                            {{ reservation.tiny_house }}
+                            <span class="status-completed" style="float: right;">
+                                Rezervasyon Durumu: {{ reservation.reservation_status }} / Ödeme Durumu: {{ payment.payment_status }}
+                            </span>
+                        </div>
+                        <div class="reservation-content">
+                            <p><strong>Konum:</strong> {{ reservation.tiny_house.location }}</p>
+                            <p><strong>Ev Sahibi:</strong> {{ reservation.tiny_house.owner.username }}</p>
+                            <p><strong>Giriş Tarihi:</strong> {{ reservation.start_date|date:"d F Y" }}</p>
+                            <p><strong>Çıkış Tarihi:</strong> {{ reservation.end_date|date:"d F Y" }}</p>
+                            <p><strong>Toplam Tutar:</strong> ₺{{ payment.amount }}</p>
+                        </div>
+                        <div class="reservation-actions">
+                            <a href="{% url 'tenant_listing_details' reservation.tiny_house.id %}" class="button-secondary">Ev Detayları İncele</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>Ödenmiş rezervasyonunuz bulunmamaktadır.</p>
+                {% endfor %}
+            </div>
+
+            <h3 class="section-title">İptal Olan Rezervasyonlar</h3>
+            <div class="grid-list">
+                {% for reservation, payment in cancelled_reservations %}
+                    <div class="reservation-card">
+                        <div class="reservation-header">
+                            {{ reservation.tiny_house }}
+                            <span class="status-cancelled" style="float: right;">
+                                Rezervasyon Durumu: {{ reservation.reservation_status }} / Ödeme Durumu: {{ payment.payment_status }}
+                            </span>
+                        </div>
+                        <div class="reservation-content">
+                            <p><strong>Konum:</strong> {{ reservation.tiny_house.location }}</p>
+                            <p><strong>Ev Sahibi:</strong> {{ reservation.tiny_house.owner.username }}</p>
+                            <p><strong>Giriş Tarihi:</strong> {{ reservation.start_date|date:"d F Y" }}</p>
+                            <p><strong>Çıkış Tarihi:</strong> {{ reservation.end_date|date:"d F Y" }}</p>
+                            <p><strong>Toplam Tutar:</strong> {% if payment %}₺{{ payment.amount }}{% else %}-{% endif %}</p>
+                        </div>
+                        <div class="reservation-actions">
+                            <a href="{% url 'tenant_listing_details' reservation.tiny_house.id %}" class="button-secondary">Ev Detayları İncele</a>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>İptal edilmiş rezervasyonunuz bulunmamaktadır.</p>
+                {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

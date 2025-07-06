@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="{% static 'css/accounts/sign_in.css' %}">
+</head>
+<body>
+    <div class="login-container">
+        <h2 class="login-title">Giriş Yap</h2>
+
+        <!-- عرض الرسائل إن وجدت -->
+        {% if messages %}
+            <ul class="alert alert-success">
+                {% for m in messages %}
+                    <li>{{ m }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- عرض الأخطاء إن وجدت -->
+        {% if errors %}
+            <ul class="alert alert-error">
+                {% for e in errors %}
+                    <li>{{ e }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" action="{% url 'sign_in' %}?role={{ request.GET.role }}">
+            {% csrf_token %}
+            <!-- حقل مخفي لحفظ الدور الممرر -->
+            <input type="hidden" name="role" value="{{ request.GET.role }}"/>
+
+            <label for="username" class="block text-sm font-medium mb-1">Kullanıcı adı</label>
+            <input type="text" id="username" name="username" required autofocus class="login-input"/>
+
+            <label for="password" class="block text-sm font-medium mb-1">Parola</label>
+            <input type="password" id="password" name="password" required class="login-input"/>
+
+            <div class="flex items-center justify-between mb-6">
+                <a href="{% url 'reset_password' %}" class="login-link">Parolanızı mı unuttunuz?</a>
+            </div>
+
+            <button type="submit" class="login-button">Giriş Yap</button>
+        </form>
+
+        <p class="mt-4 text-center text-sm">
+            Hesabınız yok mu? <a href="{% url 'sign_up' %}" class="login-link">Kayıt Ol</a>
+        </p>
+    </div>
+
+    <!-- رسائل الخطأ -->
+    {% if error %}
+        <div class="error-message">{{ error }}</div>
+    {% endif %}
+</body>
+</html>

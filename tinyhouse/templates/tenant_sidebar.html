@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kiracı Paneli Sidebar</title>
+    <link rel="stylesheet" href="{% static 'css/tenant_sidebar.css' %}">
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <!-- Profile Link -->
+        <div class="sidebar-profile-link">
+            <a href="/profile">Benim Profilim</a>
+        </div>
+
+        <h3>Kiracı Paneli</h3>
+        <ul>
+            <li>
+                <a href="/dashboard/tenant_dashboard"
+                   class="{% if request.resolver_match.url_name == 'tenant_dashboard' %}active{% endif %}">
+                    Ana Ekran
+                </a>
+            </li>
+            <li>
+                <a href="/reservations/tenant_my_reservations"
+                   class="{% if request.resolver_match.url_name == 'tenant_my_reservations' %}active{% endif %}">
+                    Rezervasyonlarım
+                </a>
+            </li>
+            <li>
+                <a href="/notifications/tenant_notifications"
+                   class="{% if request.resolver_match.url_name == 'tenant_notifications' %}active{% endif %}">
+                    Bildirimlerim
+                </a>
+            </li>
+            <li>
+                <a href="/reviews/tenant_comments_and_ratings"
+                   class="{% if request.resolver_match.url_name == 'tenant_comments_and_ratings' %}active{% endif %}">
+                    Yorumlar ve Puanlama
+                </a>
+            </li>
+        </ul>
+    </nav>
+</body>
+</html>

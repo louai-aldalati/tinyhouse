@@ -1,0 +1,128 @@
+:root {
+    --primary-blue: #6366f1;
+    --primary-blue-hover: #4f46e5;
+    --light-blue-bg: #e0e7ff;
+}
+
+/* Body & Layout */
+body {
+    background-color: #f3f4f6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+}
+.wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+.dashboard-container {
+    flex: 1;
+    padding: 2rem;
+    border-top: 4px solid var(--primary-blue);
+}
+.dashboard-title {
+    font-size: 1.75rem;
+    font-weight: 600;
+    color: var(--primary-blue-hover);
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+/* Filter Bar */
+.filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+.filter-bar input[type="text"] {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+    width: 300px;
+}
+
+/* Table */
+.table-container {
+    background-color: #ffffff;
+    border: 1px solid #e5e7eb;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th, td {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #e5e7eb;
+    vertical-align: top;
+}
+th {
+    background-color: #f9fafb;
+    font-weight: 600;
+    color: #4b5563;
+}
+
+/* Buttons */
+.btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    border: none;
+}
+.btn-approve {
+    background-color: #10b981;
+    color: #ffffff;
+}
+.btn-approve:hover {
+    background-color: #059669;
+}
+.btn-delete {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+.btn-delete:hover {
+    background-color: #dc2626;
+}
+
+/* Status */
+.status-active {
+    color: green;
+    font-weight: 500;
+}
+.status-inactive {
+    color: red;
+    font-weight: 500;
+}
+
+/* Helpers */
+.action-form {
+    display: inline;
+}
+.text-center {
+    text-align: center;
+}
+
+/* Alerts */
+.alert {
+    max-width: 400px;
+    margin: 1rem auto;
+    padding: 1rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    list-style: disc inside;
+}
+.alert-success {
+    background-color: var(--light-blue-bg);
+    color: var(--primary-blue-hover);
+    border: 1px solid var(--primary-blue-hover);
+}
+.alert-error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #991b1b;
+}

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profilim</title>
+    <link rel="stylesheet" href="{% static 'css/accounts/admin_user_edit.css' %}">
+</head>
+<body>
+    <div class="profile-container">
+        <h2 class="profile-title">{{ profile.user.username }} Profili</h2>
+
+        <!-- عرض الرسائل إن وجدت -->
+        {% if messages %}
+            <ul class="alert alert-success">
+                {% for m in messages %}
+                    <li>{{ m }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- عرض الأخطاء إن وجدت -->
+        {% if errors %}
+            <ul class="alert alert-error">
+                {% for e in errors %}
+                    <li>{{ e }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" action="">
+            {% csrf_token %}
+
+            <label for="rol" class="block text-sm font-medium mb-1">Kullanıcı Rolü</label>
+            <select id="rol" name="rol" required class="signup-input">
+                <option value="kiraci" {% if form_data.rol == 'kiraci' or profile.role == 'kiraci' and not form_data.rol %}selected{% endif %}>Kiracı</option>
+                <option value="ev_sahibi" {% if form_data.rol == 'ev_sahibi' or profile.role == 'ev_sahibi' and not form_data.rol %}selected{% endif %}>Ev Sahibi</option>
+                <option value="admin" {% if form_data.rol == 'admin' or profile.role == 'admin' and not form_data.rol %}selected{% endif %}>Admin</option>
+            </select>
+
+            <label for="is_active" class="block text-sm font-medium mb-1">Kullanıcı Durumu</label>
+            <select id="is_active" name="is_active" required class="signup-input">
+                <option value="True" {% if form_data.is_active == 'True' or profile.user.is_active and not form_data.is_active %}selected{% endif %}>Aktif</option>
+                <option value="False" {% if form_data.is_active == 'False' or not profile.user.is_active and not form_data.is_active %}selected{% endif %}>Pasif</option>
+            </select>
+
+            <label for="username" class="block text-sm font-medium mb-1">Kullanıcı Adı</label>
+            <input
+                type="text" id="username" name="username"
+                value="{{ form_data.username|default:profile.user.username }}"
+                class="profile-input" required />
+
+            <label for="email" class="block text-sm font-medium mb-1">E-posta</label>
+            <input
+                type="email" id="email" name="email"
+                value="{{ form_data.email|default:profile.user.email }}"
+                class="profile-input" required />
+
+            <label for="phone_number" class="block text-sm font-medium mb-1">Telefon Numarası</label>
+            <input
+                type="text" id="phone_number" name="phone_number"
+                value="{{ form_data.phone_number|default:profile.phone_number }}"
+                class="profile-input" />
+
+            <label for="address" class="block text-sm font-medium mb-1">Adres</label>
+            <input
+                type="text" id="address" name="address"
+                value="{{ form_data.address|default:profile.address }}"
+                class="profile-input" />
+
+            <button type="submit" class="profile-button">Güncellemeleri Kaydet</button>
+        </form>
+
+        <div class="return-button">
+            <a href="{% url 'admin_user_management' %}">Ana Sayfaya Dön</a>
+        </div>
+    </div>
+</body>
+</html>

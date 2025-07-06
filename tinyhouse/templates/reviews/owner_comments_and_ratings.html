@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yorumlar ve Puanlar</title>
+    <link rel="stylesheet" href="{% static 'css/reviews/owner_comments_and_ratings.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'owner_sidebar.html' %}
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Yorumlar ve Puanlar</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}<li>{{ m }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="card">
+                <h3 class="card-title">Kiracı Yorumları</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#ID</th>
+                                <th>İlan Başlığı</th>
+                                <th>Kiracı</th>
+                                <th>Yorum &amp; Puan</th>
+                                <th>Cevap</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for review in reviews %}
+                                <tr>
+                                    <td>{{ review.id }}</td>
+                                    <td>{{ review.reservation.tiny_house.title }}</td>
+                                    <td>{{ review.reservation.tenant.get_full_name|default:review.reservation.tenant.username }}</td>
+                                    <td>
+                                        <div class="space-y-2">
+                                            <p>“{{ review.comment }}”</p>
+                                            <p>
+                                                <strong>Puan:</strong>
+                                                {% for i in star_range %}
+                                                    {% if i <= review.rating %}★{% else %}☆{% endif %}
+                                                {% endfor %}
+                                            </p>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <form method="post">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="review_id" value="{{ review.id }}">
+                                            <div class="space-y-2">
+                                                <textarea
+                                                    class="form-textarea"
+                                                    name="reply"
+                                                    rows="3"
+                                                    placeholder="Cevabınızı yazın..."
+                                                    required
+                                                >{{ review.reply }}</textarea>
+                                                <button type="submit" class="btn-primary text-sm">Gönder</button>
+                                            </div>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">Henüz yorum yok.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

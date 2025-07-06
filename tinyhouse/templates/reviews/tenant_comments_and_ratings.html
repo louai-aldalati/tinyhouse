@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yorumlar ve Puanlama</title>
+  <link rel="stylesheet" href="{% static 'css/reviews/tenant_comments_and_ratings.css' %}">
+</head>
+<body>
+  <div class="wrapper">
+    {% include 'tenant_sidebar.html' %}
+    <div class="dashboard-container">
+      <h2 class="dashboard-title">Yorumlar ve Puanlama</h2>
+
+      {% if messages %}
+        <ul class="alert alert-success">
+          {% for m in messages %}<li>{{ m }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+      {% if errors %}
+        <ul class="alert alert-error">
+          {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+        </ul>
+      {% endif %}
+
+      <!-- "Yorum Yap" Bölümü -->
+      <section id="yorum-yap">
+        <div class="section-header">Yorum Yap</div>
+        {% for r in reservations_to_review %}
+          <div class="review-card">
+            <div class="review-header">
+              {{ r.tiny_house.title }} — {{ r.tiny_house.location }}
+            </div>
+            <div class="review-content">
+              <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="reservation_id" value="{{ r.id }}" />
+
+                <div class="form-group">
+                  <label>Puanınız:</label>
+                  <div class="stars">
+                    {% for i in "54321" %}
+                      <input type="radio" id="star{{ i }}-{{ r.id }}" name="rating" value="{{ i }}" required />
+                      <label for="star{{ i }}-{{ r.id }}">★</label>
+                    {% endfor %}
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="comment-{{ r.id }}">Yorumunuz:</label>
+                  <textarea id="comment-{{ r.id }}" name="comment" rows="4" placeholder="Evinizle ilgili deneyiminizi paylaşın..." required></textarea>
+                </div>
+
+                <button type="submit" class="button-primary">Gönder</button>
+              </form>
+            </div>
+          </div>
+        {% empty %}
+          <p>Değerlendirilecek rezervasyon bulunmuyor.</p>
+        {% endfor %}
+      </section>
+
+      <!-- "Geçmiş Yorumlar" Bölümü -->
+      <section id="gecmis-yorumlar">
+        <div class="section-header">Geçmiş Yorumlar</div>
+        {% for review in past_reviews %}
+          <div class="review-card">
+            <div class="review-header">
+              {{ review.reservation.tiny_house.title }} — {{ review.reservation.tiny_house.location }}
+            </div>
+            <div class="review-content">
+              <div class="stars">
+                {% for i in "54321" %}
+                  <input type="radio"
+                         name="rating-past-{{ review.id }}"
+                         id="star{{ i }}-past-{{ review.id }}"
+                         value="{{ i }}"
+                         {% if review.rating|stringformat:"s" == i %}checked{% endif %}
+                         disabled />
+                  <label for="star{{ i }}-past-{{ review.id }}">★</label>
+                {% endfor %}
+              </div>
+              <p><strong>Sizin Yorumunuz:</strong> {{ review.comment }}</p>
+              <p><strong>Ev Sahibi Cevabı:</strong> {{ review.reply }}</p>
+              <small>{{ review.created_at|date:"d F Y" }}</small>
+            </div>
+          </div>
+        {% empty %}
+          <p>Henüz yorum yapmadınız.</p>
+        {% endfor %}
+      </section>
+
+    </div>
+  </div>
+</body>
+</html>

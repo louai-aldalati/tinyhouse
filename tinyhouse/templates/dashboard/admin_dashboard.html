@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard/admin_dashboard.css' %}"/>
+  </head>
+  <body>
+    <div class="wrapper">
+      {# تضمين الشريط الجانبي #}
+      {% include 'admin_sidebar.html' %}
+
+      <!-- Main Content -->
+      <div class="dashboard-container">
+        <h2 class="dashboard-title">Ana Ekran - Yönetici Özeti</h2>
+
+        <!-- عرض الرسائل إن وجدت -->
+        {% if messages %}
+          <ul class="alert alert-success">
+            {% for m in messages %}
+              <li>{{ m }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <!-- عرض الأخطاء إن وجدت -->
+        {% if errors %}
+          <ul class="alert alert-error">
+            {% for e in errors %}
+              <li>{{ e }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <!-- İstatistikler -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+          <div class="card">
+            <p class="card-title">Toplam Kullanıcı</p>
+            <p class="card-value">{{ total_users }}</p>
+          </div>
+          <div class="card">
+            <p class="card-title">Aktif Kullanıcı</p>
+            <p class="card-value">{{ active_users }}</p>
+          </div>
+          <div class="card">
+            <p class="card-title">Toplam Rezervasyon</p>
+            <p class="card-value">{{ total_reservations }}</p>
+          </div>
+          <div class="card">
+            <p class="card-title">Finansal İşlemler</p>
+            <p class="card-value">₺{{ total_revenue }}</p>
+          </div>
+        </div>
+
+        <!-- Kullanıcı Listesi -->
+        <section class="mb-8">
+          <h3 class="text-lg font-medium text-gray-700 mb-2">
+            Kullanıcı Listesi
+          </h3>
+          <table>
+            <thead>
+              <tr>
+                <th>İsim</th>
+                <th>E-posta</th>
+                <th>Rol</th>
+                <th>Durum</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for u in users %}
+                <tr>
+                  <td>
+                    {{ u.get_full_name|default:u.username }}
+                  </td>
+                  <td>{{ u.email }}</td>
+                  <td>{{ u.profile.get_role_display }}</td>
+                  <td>{{ u.is_active|yesno:"Aktif,Pasif" }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" style="text-align:center;">
+                    Kullanıcı bulunamadı
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Rezervasyon Listesi -->
+        <section class="mb-8">
+          <h3 class="text-lg font-medium text-gray-700 mb-2">
+            Rezervasyon Listesi
+          </h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Rezervasyon No</th>
+                <th>Ev Sahibi</th>
+                <th>Kiracı</th>
+                <th>Ev</th>
+                <th>Tarihler</th>
+                <th>Durum</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in reservations %}
+                <tr>
+                  <td>#{{ r.id }}</td>
+                  <td>
+                    {{ r.tiny_house.owner.get_full_name|default:r.tiny_house.owner.username }}
+                  </td>
+                  <td>
+                    {{ r.tenant.get_full_name|default:r.tenant.username }}
+                  </td>
+                  <td>{{ r.tiny_house.title }}</td>
+                  <td>
+                    {{ r.start_date|date:"d M" }}
+                    →
+                    {{ r.end_date|date:"d M" }}
+                  </td>
+                  <td>{{ r.get_reservation_status_display }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="6" style="text-align:center;">
+                    Rezervasyon bulunamadı
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+
+        <!-- Ödeme Listesi -->
+        <section>
+          <h3 class="text-lg font-medium text-gray-700 mb-2">
+            Ödeme Listesi
+          </h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Ödeme ID</th>
+                <th>Rezervasyon No</th>
+                <th>Tutar</th>
+                <th>Durum</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for p in payments %}
+                <tr>
+                  <td>{{ p.id }}</td>
+                  <td>#{{ p.reservation.id }}</td>
+                  <td>₺{{ p.amount }}</td>
+                  <td>{{ p.get_payment_status_display }}</td>
+                </tr>
+              {% empty %}
+                <tr>
+                  <td colspan="4" style="text-align:center;">
+                    Ödeme bulunamadı
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </div>
+  </body>
+</html>

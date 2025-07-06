@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Owner Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard/owner_dashboard.css' %}" />
+  </head>
+  <body>
+    <div class="wrapper">
+      {% include 'owner_sidebar.html' %}
+      <div class="dashboard-container">
+        <h2 class="dashboard-title">Ana Ekran - Ev Sahibi Özeti</h2>
+
+        {% if messages %}
+          <ul class="alert alert-success">
+            {% for m in messages %}
+              <li>{{ m }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        {% if errors %}
+          <ul class="alert alert-error">
+            {% for e in errors %}
+              <li>{{ e }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <!-- Özet Kartları -->
+        <div class="grid-summary">
+          <div class="card">
+            <p class="card-title">Toplam İlan</p>
+            <p class="card-value">{{ total_listings }}</p>
+          </div>
+          <div class="card">
+            <p class="card-title">Onaylanmış Rezervasyon</p>
+            <p class="card-value">{{ approved_reservations }}</p>
+          </div>
+          <div class="card">
+            <p class="card-title">Ödemeyi Bekleyen Rezervasyon</p>
+            <p class="card-value">{{ pending_payment_reservations }}</p>
+          </div>
+          <div class="card">
+            <p class="card-title">Gelen Yorum</p>
+            <p class="card-value">{{ incoming_reviews }}</p>
+          </div>
+          <div class="card">
+            <p class="card-title">Toplam Gelir</p>
+            <p class="card-value">₺{{ total_revenue }}</p>
+          </div>
+        </div>
+
+        <!-- Son Rezervasyonlar Bölümü -->
+        <div class="reservations-card">
+          <h3 class="card-title mb-4">Son Rezervasyonlar</h3>
+          <table class="reservations-table">
+            <thead>
+              <tr>
+                <th>Rezervasyon No</th>
+                <th>Ev Başlığı</th>
+                <th>Tarih</th>
+                <th>Rezervasyon Durumu</th>
+                <th>Ödeme Durumu</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for r in recent_reservations %}
+                {% comment %}
+                  نحاول إيجاد دفعة مكتملة، إن وجدت
+                {% endcomment %}
+                {% with payments=r.payment_set.all %}
+                  {% with complete_payments=payments|dictsort:"-payment_date"|first %}
+                    <tr>
+                      <td>#{{ r.id }}</td>
+                      <td>{{ r.tiny_house.title }}</td>
+                      <td>
+                        {{ r.start_date|date:"d M Y" }}
+                        – {{ r.end_date|date:"d M Y" }}
+                      </td>
+                      <td class="{% if r.reservation_status == 'iptal' %}status-cancelled{% else %}status-approved{% endif %}">
+                        {{ r.get_reservation_status_display }}
+                      </td>
+                      <td class="
+                        {% if r.latest_payment_status == 'tamamlandi' %}payment-complete{% endif %}
+                        {% if r.latest_payment_status == 'iptal' %}payment-cancelled{% endif %}
+                      ">
+                        {{ r.latest_payment_status|capfirst }}
+                      </td>
+                    </tr>
+                  {% endwith %}
+                {% endwith %}
+              {% empty %}
+                <tr>
+                  <td colspan="5" style="text-align:center;">
+                    Henüz rezervasyon yok
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    </div>
+  </body>
+</html>

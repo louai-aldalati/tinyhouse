@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervasyon Yapma</title>
+    <link rel="stylesheet" href="{% static 'css/payments/tenant_make_payment.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'tenant_sidebar.html' %}
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Ödeme Yapma</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}<li>{{ m }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="detail-card">
+                <div class="detail-content">
+                    <h3 class="house-title">Online Ödeme</h3>
+
+                    <div class="form-group">
+                        <label for="total_amount">Ödenecek Miktar:</label>
+                        <h3>{{ payment.amount }}</h3>
+                    </div>
+
+                    <form method="post" action="{% url 'tenant_make_payment' payment.id %}">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="card-number">Kart Numarası</label>
+                            <input type="text" id="card-number" name="card_number" placeholder="XXXX XXXX XXXX XXXX" class="search-input" />
+                        </div>
+                        <div class="form-group">
+                            <label for="expiry">Son Kullanma Tarihi</label>
+                            <input type="month" id="expiry" name="expiry" class="filter-select" />
+                        </div>
+                        <div class="form-group">
+                            <label for="cvc">CVC</label>
+                            <input type="text" id="cvc" name="cvc" placeholder="123" class="search-input" />
+                        </div>
+                        <button type="submit" class="button-primary">Ödeme Yap</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

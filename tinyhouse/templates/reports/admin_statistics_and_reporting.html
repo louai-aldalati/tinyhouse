@@ -1,0 +1,112 @@
+<!-- templates/admin_statistics.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İstatistik ve Raporlama</title>
+    <link rel="stylesheet" href="{% static 'css/reports/admin_statistics_and_reporting.css' %}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'admin_sidebar.html' %}
+
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">İstatistik ve Raporlama</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}<li>{{ m }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- Kullanıcı İstatistikleri -->
+            <section class="section">
+                <h3 class="card-title">Kullanıcı İstatistikleri</h3>
+                <div class="stats-grid">
+                    <div class="card">
+                        <p class="card-title">Toplam Kullanıcı</p>
+                        <p class="card-value">{{ total_users }}</p>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">Aktif Kullanıcı</p>
+                        <p class="card-value">{{ active_users }}</p>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">Yeni Üye (Bu Ay)</p>
+                        <p class="card-value">{{ new_users_this_month }}</p>
+                    </div>
+                    <div class="card">
+                        <p class="card-title">Rezervasyon Trendi</p>
+                        <p class="card-value">
+                            {% if trend_up %}▲{% else %}▼{% endif %} %{{ reservation_trend_abs }}
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sistemi Genel Durumu -->
+            <section class="section">
+                <h3 class="card-title">Sistemi Genel Durumu</h3>
+                <div class="charts">
+                    <div><canvas id="paymentChart"></canvas></div>
+                    <div><canvas id="reservationChart"></canvas></div>
+                    <div><canvas id="reviewChart"></canvas></div>
+                    <div><canvas id="contentChart"></canvas></div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // 1. Ödeme Dağılımı
+        const paymentLabels = JSON.parse('{{ payment_labels_json|safe }}');
+        const paymentCounts = JSON.parse('{{ payment_counts_json|safe }}');
+        new Chart(document.getElementById('paymentChart'), {
+            type: 'doughnut',
+            data: { labels: paymentLabels, datasets: [{ data: paymentCounts }] },
+            options: { plugins: { title: { display: true, text: 'Ödeme Dağılımı' } } }
+        });
+
+        // 2. Rezervasyon Trendleri (Line)
+        const resLabels = JSON.parse('{{ reservation_trend_labels_json|safe }}');
+        const resData = JSON.parse('{{ reservation_trend_data_json|safe }}');
+        new Chart(document.getElementById('reservationChart'), {
+            type: 'line',
+            data: {
+                labels: resLabels,
+                datasets: [{ label: 'Rezervasyon Sayısı', data: resData, fill: false, tension: 0.4, borderColor: '#6366f1' }]
+            },
+            options: { plugins: { title: { display: true, text: 'Rezervasyon Trendleri (Son 6 Ay)' } } }
+        });
+
+        // 3. Yorum Adedi (Bar)
+        const reviewLabels = JSON.parse('{{ review_labels_json|safe }}');
+        const reviewData = JSON.parse('{{ review_data_json|safe }}');
+        new Chart(document.getElementById('reviewChart'), {
+            type: 'bar',
+            data: { labels: reviewLabels, datasets: [{ label: 'Yorum Adedi', data: reviewData, borderWidth: 1 }] },
+            options: {
+                plugins: { title: { display: true, text: 'Yorum Adedi (Son 6 Ay)' } },
+                scales: { y: { beginAtZero: true } }
+            }
+        });
+
+        // 4. Aktif İçerik (Pie)
+        const contentLabels = JSON.parse('{{ content_labels_json|safe }}');
+        const contentCounts = JSON.parse('{{ content_counts_json|safe }}');
+        new Chart(document.getElementById('contentChart'), {
+            type: 'pie',
+            data: { labels: contentLabels, datasets: [{ data: contentCounts }] },
+            options: { plugins: { title: { display: true, text: 'Aktif vs Pasif İlanlar' } } }
+        });
+    </script>
+</body>
+</html>

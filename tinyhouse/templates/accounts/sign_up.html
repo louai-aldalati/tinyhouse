@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kayıt Ol</title>
+    <link rel="stylesheet" href="{% static 'css/accounts/sign_up.css' %}">
+</head>
+<body>
+    <div class="signup-container">
+        <h2 class="signup-title">Kayıt Ol</h2>
+
+        <!-- عرض الرسائل إن وجدت -->
+        {% if messages %}
+            <ul class="alert alert-success">
+                {% for m in messages %}
+                    <li>{{ m }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- عرض الأخطاء إن وجدت -->
+        {% if errors %}
+            <ul class="alert alert-error">
+                {% for e in errors %}
+                    <li>{{ e }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <form method="post" action="{% url 'sign_up' %}">
+            {% csrf_token %}
+
+            <label for="rol" class="block text-sm font-medium mb-1">Rolünüz</label>
+            <select id="rol" name="rol" required class="signup-input">
+                <option value="tenant" {% if form_data.rol == 'tenant' %}selected{% endif %}>Kiracı</option>
+                <option value="owner" {% if form_data.rol == 'owner' %}selected{% endif %}>Ev Sahibi</option>
+            </select>
+
+            <label for="username" class="block text-sm font-medium mb-1">Kullanıcı Adı</label>
+            <input
+                type="text" id="username" name="username" required
+                value="{{ form_data.username|default:'' }}"
+                class="signup-input"/>
+
+            <label for="email" class="block text-sm font-medium mb-1">E-posta</label>
+            <input
+                type="email" id="email" name="email" required
+                value="{{ form_data.email|default:'' }}"
+                class="signup-input"/>
+
+            <label for="phone_number" class="block text-sm font-medium mb-1">
+                Telefon Numarası (isteğe bağlı)
+            </label>
+            <input
+                type="text" id="phone_number" name="phone_number"
+                value="{{ form_data.phone_number|default:'' }}"
+                class="signup-input"/>
+
+            <label for="address" class="block text-sm font-medium mb-1">
+                Adres (isteğe bağlı)
+            </label>
+            <input
+                type="text" id="address" name="address"
+                value="{{ form_data.address|default:'' }}"
+                class="signup-input"/>
+
+            <label for="password1" class="block text-sm font-medium mb-1">Parola</label>
+            <input type="password" id="password1" name="password1" required class="signup-input"/>
+
+            <label for="password2" class="block text-sm font-medium mb-1">Parolayı Onayla</label>
+            <input type="password" id="password2" name="password2" required class="signup-input"/>
+
+            <button type="submit" class="signup-button">Kayıt Ol</button>
+        </form>
+
+        <p class="mt-4 text-center text-sm">
+            Zaten hesabınız var mı?
+            <a href="{% url 'index' %}" class="signup-link">Giriş Yap</a>
+        </p>
+    </div>
+</body>
+</html>

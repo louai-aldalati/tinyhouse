@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervasyon Yönetimi</title>
+    <link rel="stylesheet" href="{% static 'css/reservations/admin_reservation_management.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'admin_sidebar.html' %}
+
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Rezervasyon Yönetimi</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}
+                        <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- Filtreleme -->
+            <section class="mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <input type="text" placeholder="Rezervasyon Ara..." class="filter-input" />
+                </div>
+            </section>
+
+            <!-- Rezervasyon Listesi -->
+            <section>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Rez No</th>
+                            <th>Ev Sahibi</th>
+                            <th>Kiracı</th>
+                            <th>Ev</th>
+                            <th>Başlangıç Tarihi</th>
+                            <th>Bitiş Tarihi</th>
+                            <th>Ödeme Miktarı</th>
+                            <th>Rezervasyon Durumu</th>
+                            <th>Ödeme Durumu</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in reservations_list %}
+                            <tr>
+                                <td>#{{ item.id }}</td>
+                                <td>{{ item.owner.get_full_name|default:item.owner.username }}</td>
+                                <td>{{ item.tenant.get_full_name|default:item.tenant.username }}</td>
+                                <td>{{ item.house.title }}</td>
+                                <td>{{ item.start_date }}</td>
+                                <td>{{ item.end_date }}</td>
+                                <td>{{ item.total_amount|floatformat:2 }} ₺</td>
+                                <td>{{ item.reservation_status }}</td>
+                                <td>{{ item.payment|default:"N/A" }}</td>
+                                <td class="actions-cell">
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="admin_cancel_id" value="{{ item.id }}">
+                                        <button type="submit" class="btn-primary">İptal Et</button>
+                                    </form>
+                                    <form method="post">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="admin_agree_id" value="{{ item.id }}">
+                                        <button type="submit" class="btn-primary">Kabul Et</button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="10" class="text-center">Rezervasyon bulunmamaktadır.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const input = document.querySelector('.filter-input');
+            const rows = document.querySelectorAll('table tbody tr');
+            input.addEventListener('input', function() {
+                const filter = this.value.trim().toLowerCase();
+                rows.forEach(row => {
+                    const text = Array.from(row.cells)
+                                      .map(cell => cell.textContent.toLowerCase())
+                                      .join(' ');
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ev Sahibi - Bildirimlerim</title>
+    <link rel="stylesheet" href="{% static 'css/notifications/owner_notifications.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'owner_sidebar.html' %}
+
+        <!-- Main Content -->
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Bildirimlerim</h2>
+
+            <div class="notifications-list">
+                {% for notif in notifications %}
+                    <div class="notif-card {% if not notif.is_read %}unread{% endif %}">
+                        <div class="notif-header">
+                            <span class="notif-title">{{ notif.title }}</span>
+                            <span class="notif-date">{{ notif.created_at|date:"d M Y H:i" }}</span>
+                        </div>
+                        <p class="notif-message">{{ notif.message }}</p>
+
+                        {% if not notif.is_read %}
+                            <form method="post" class="mark-read-form">
+                                {% csrf_token %}
+                                <input type="hidden" name="notif_id" value="{{ notif.id }}">
+                                <button type="submit" class="btn-mark-read">Okundu</button>
+                            </form>
+                        {% endif %}
+                    </div>
+                {% empty %}
+                    <p class="no-notif">Henüz hiç bildiriminiz yok.</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</body>
+</html>

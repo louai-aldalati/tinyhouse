@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>İlan Detayları</title>
+    <link rel="stylesheet" href="{% static 'css/listings/tenant_listing_details.css' %}">
+    <!-- FullCalendar CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'tenant_sidebar.html' %}
+
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">İlan Detayları</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}
+                        <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="detail-card">
+                <div class="detail-images">
+                    {% for img in images %}
+                        {% if img.image %}
+                            <img src="{{ img.image.url }}" alt="Tiny House Foto {{ forloop.counter }}" />
+                        {% endif %}
+                    {% empty %}
+                        <p>Henüz Fotoğraf Yüklenmedi.</p>
+                    {% endfor %}
+                </div>
+                <div class="detail-content">
+                    <h3 class="house-title">{{ house.title }}</h3>
+                    <h3 class="house-title">Ev Sahibi: {{ house.owner }}</h3>
+                    <p class="house-info">
+                        ₺{{ house.price_per_night }} / gece · {{ house.location }} · {{ house.max_tenant }} kişi
+                    </p>
+                    <p class="house-desc">
+                        {{ house.description }}
+                    </p>
+                </div>
+            </div>
+
+            <div class="calendar-section">
+                <h3 class="calendar-title">Rezervasyon Takvimi</h3>
+                <div id="calendar"></div>
+            </div>
+
+            <div class="action-center">
+                <a href="{% url 'tenant_make_reservation' house.id %}">
+                    <button class="button-primary">Rezervasyon Yap</button>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- FullCalendar JS -->
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var events = {{ calendar_events_json|safe }};
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'tr',
+                events: events,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek'
+                }
+            });
+            calendar.render();
+        });
+    </script>
+</body>
+</html>

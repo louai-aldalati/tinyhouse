@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ödeme Bilgileri</title>
+    <link rel="stylesheet" href="{% static 'css/payments/owner_payment_management.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'owner_sidebar.html' %}
+
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Ödeme Bilgileri</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}
+                        <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- Ödeme Geçmişi -->
+            <div class="card">
+                <h3 class="card-title">Ödeme Geçmişi</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#Ödeme No</th>
+                                <th>İlan Başlığı</th>
+                                <th>Tarih</th>
+                                <th>Tutar (₺)</th>
+                                <th>Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for p in payments %}
+                                <tr>
+                                    <td>{{ p.id }}</td>
+                                    <td>{{ p.reservation.tiny_house.title }}</td>
+                                    <td>{{ p.payment_date|date:"Y-m-d" }}</td>
+                                    <td>₺{{ p.amount }}</td>
+                                    <td>{{ p.get_payment_status_display }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center">Henüz ödeme yok</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Gelir Raporları -->
+            <div class="card">
+                <h3 class="card-title">Gelir Raporları</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Dönem</th>
+                                <th>Toplam Rezervasyon</th>
+                                <th>Toplam Gelir (₺)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rep in income_reports %}
+                                <tr>
+                                    <td>{{ rep.month|date:"F Y" }}</td>
+                                    <td>{{ rep.total_reservations }}</td>
+                                    <td>₺{{ rep.total_revenue }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="3" class="text-center">Veri yok</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

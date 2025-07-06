@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ödeme Yönetimi</title>
+    <link rel="stylesheet" href="{% static 'css/payments/admin_payment_management.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'admin_sidebar.html' %}
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Ödeme Yönetimi - Mali Raporlar</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}
+                        <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- فلترة البحث -->
+            <section class="mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <input type="text" name="q" placeholder="Ödeme Ara..." class="filter-input" value="{{ request.GET.q }}">
+                </div>
+            </section>
+
+            <!-- جدول التقارير المالية -->
+            <section>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ödeme ID</th>
+                            <th>Rezervasyon No</th>
+                            <th>Ev Sahibi</th>
+                            <th>Kiracı</th>
+                            <th>Tutar</th>
+                            <th>Tarih</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in payments %}
+                            <tr>
+                                <td>{{ p.id }}</td>
+                                <td>#{{ p.reservation.id }}</td>
+                                <td>{{ p.reservation.tiny_house.owner.get_full_name|default:p.reservation.tiny_house.owner.username }}</td>
+                                <td>{{ p.reservation.tenant.get_full_name|default:p.reservation.tenant.username }}</td>
+                                <td>₺{{ p.amount }}</td>
+                                <td>{{ p.payment_date|date:"d F Y" }}</td>
+                                <td>{{ p.get_payment_status_display }}</td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="7" style="text-align:center;">Kayıtlı ödeme bulunamadı</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('input[name="q"]');
+            const tableRows = document.querySelectorAll('table tbody tr');
+
+            searchInput.addEventListener('input', function() {
+                const filter = this.value.trim().toLowerCase();
+                tableRows.forEach(row => {
+                    const cells = Array.from(row.cells);
+                    const match = cells.some(cell =>
+                        cell.textContent.toLowerCase().includes(filter)
+                    );
+                    row.style.display = match ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

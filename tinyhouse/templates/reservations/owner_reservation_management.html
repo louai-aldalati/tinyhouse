@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervasyon Yönetimi</title>
+    <link rel="stylesheet" href="{% static 'css/reservations/owner_reservation_management.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'owner_sidebar.html' %}
+
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Rezervasyon Yönetimi</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}
+                        <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- 1) Rezervasyon Talepleri -->
+            <div class="card mb-6">
+                <h3 class="card-title">Rezervasyon Talepleri</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#Rez No</th>
+                                <th>İlan Başlığı</th>
+                                <th>Kiracı</th>
+                                <th>Tarih</th>
+                                <th>Toplam Tutar</th>
+                                <th>Ödeme Durumu</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for res in reservation_requests %}
+                                <tr>
+                                    <td>{{ res.id }}</td>
+                                    <td>{{ res.tiny_house.title }}</td>
+                                    <td>{{ res.tenant.get_full_name|default:res.tenant.username }}</td>
+                                    <td>{{ res.start_date }} – {{ res.end_date }}</td>
+                                    <td>{{ res.total_amount|floatformat:2 }} ₺</td>
+                                    <td class="status">{{ res.get_reservation_status_display }}</td>
+                                    <td class="actions">
+                                        <form method="post">{% csrf_token %}
+                                            <input type="hidden" name="approve_id" value="{{ res.id }}">
+                                            <button type="submit" class="btn-primary text-sm">Kabul Et</button>
+                                        </form>
+                                        <form method="post">{% csrf_token %}
+                                            <input type="hidden" name="reject_id" value="{{ res.id }}">
+                                            <button type="submit" class="btn-primary text-sm">Reddet</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Henüz rezervasyon talebi yok.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 2) Ödemeyi Bekleyen Rezervasyonlar -->
+            <div class="card mb-6">
+                <h3 class="card-title">Ödemeyi Bekleyen Rezervasyonlar</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#Rez No</th>
+                                <th>İlan Başlığı</th>
+                                <th>Kiracı</th>
+                                <th>Tarih</th>
+                                <th>Toplam Tutar</th>
+                                <th>Ödeme Durumu</th>
+                                <th>İşlemler</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pay in payments_waiting %}
+                                <tr>
+                                    <td>{{ pay.reservation.id }}</td>
+                                    <td>{{ pay.reservation.tiny_house.title }}</td>
+                                    <td>{{ pay.reservation.tenant.get_full_name|default:pay.reservation.tenant.username }}</td>
+                                    <td>{{ pay.reservation.start_date }} – {{ pay.reservation.end_date }}</td>
+                                    <td>{{ pay.amount|floatformat:2 }} ₺</td>
+                                    <td class="status">{{ pay.get_payment_status_display }}</td>
+                                    <td class="actions">
+                                        <form method="post">{% csrf_token %}
+                                            <input type="hidden" name="paid_id" value="{{ pay.id }}">
+                                            <button type="submit" class="btn-primary text-sm">Ödendi Mi?</button>
+                                        </form>
+                                        <form method="post">{% csrf_token %}
+                                            <input type="hidden" name="reject_id" value="{{ pay.reservation.id }}">
+                                            <button type="submit" class="btn-primary text-sm">İptal</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center">Ödemeyi Bekleyen Rezervasyonlar Yok</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 3) Ödemesi Tamamlanan Rezervasyonlar -->
+            <div class="card mb-6">
+                <h3 class="card-title">Ödemesi Tamamlanan Rezervasyonlar</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#Rez No</th>
+                                <th>İlan Başlığı</th>
+                                <th>Kiracı</th>
+                                <th>Tarih</th>
+                                <th>Toplam Tutar</th>
+                                <th>Ödeme Durumu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pay in payments_completed %}
+                                <tr>
+                                    <td>{{ pay.reservation.id }}</td>
+                                    <td>{{ pay.reservation.tiny_house.title }}</td>
+                                    <td>{{ pay.reservation.tenant.get_full_name|default:pay.reservation.tenant.username }}</td>
+                                    <td>{{ pay.reservation.start_date }} – {{ pay.reservation.end_date }}</td>
+                                    <td>{{ pay.amount|floatformat:2 }} ₺</td>
+                                    <td class="status completed">{{ pay.get_payment_status_display }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">Tamamlanmış Rezervasyon Bulunmamaktadır.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- 4) İptal Edilen Rezervasyonlar -->
+            <div class="card mb-6">
+                <h3 class="card-title">İptal Edilen Rezervasyonlar</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#Rez No</th>
+                                <th>İlan Başlığı</th>
+                                <th>Kiracı</th>
+                                <th>Tarih</th>
+                                <th>Toplam Tutar</th>
+                                <th>Durum</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for res in cancelled_reservations %}
+                                <tr>
+                                    <td>{{ res.id }}</td>
+                                    <td>{{ res.tiny_house.title }}</td>
+                                    <td>{{ res.tenant.get_full_name|default:res.tenant.username }}</td>
+                                    <td>{{ res.start_date }} – {{ res.end_date }}</td>
+                                    <td>{{ res.total_amount|floatformat:2 }} ₺</td>
+                                    <td class="status cancelled">{{ res.get_reservation_status_display }}</td>
+                                </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="6" class="text-center">İptal edilmiş rezervasyon bulunmamaktadır.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</body>
+</html>

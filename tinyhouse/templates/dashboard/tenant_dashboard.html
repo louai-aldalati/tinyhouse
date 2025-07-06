@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tenant Dashboard</title>
+    <link rel="stylesheet" href="{% static 'css/dashboard/tenant_dashboard.css' %}" />
+  </head>
+  <body>
+    <div class="wrapper">
+      {# تضمين الشريط الجانبي #}
+      {% include 'tenant_sidebar.html' %}
+
+      <!-- Main Content -->
+      <div class="dashboard-container">
+        <h2 class="dashboard-title">Ana Ekran - Ev Ara ve Popüler Evler</h2>
+
+        <!-- عرض الرسائل إن وجدت -->
+        {% if messages %}
+          <ul class="alert alert-success">
+            {% for m in messages %}
+              <li>{{ m }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <!-- عرض الأخطاء إن وجدت -->
+        {% if errors %}
+          <ul class="alert alert-error">
+            {% for e in errors %}
+              <li>{{ e }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+
+        <div class="search-filter">
+          <form method="get" style="display: flex; gap:1rem; width:100%;">
+            <input
+              type="text"
+              name="q"
+              value="{{ request.GET.q }}"
+              class="search-input"
+              placeholder="Ev Ara..."
+            />
+          </form>
+        </div>
+
+        <div class="grid-list">
+          {% for house in houses %}
+            <div class="house-card">
+              {% with imgs=house.tinyhouseimage_set.all %}
+                {% if imgs %}
+                  <img src="{{ imgs.0.image.url }}" alt="{{ house.title }}" />
+                {% else %}
+                  <img
+                    src="https://via.placeholder.com/300x150?text=No+Image"
+                    alt="No Image"
+                  />
+                {% endif %}
+              {% endwith %}
+              <div class="house-details">
+                <p class="house-title">{{ house.title }}</p>
+                <p class="house-title">Ev Sahibi: {{ house.owner }}</p>
+                <p class="house-info">
+                  ₺{{ house.price_per_night }} / gece · {{ house.location }} ·
+                  {{ house.max_tenant }} kişi
+                </p>
+                <a
+                  href="{% url 'tenant_listing_details' house.id %}"
+                  class="button-primary"
+                  >Detayları Gör</a
+                >
+
+                {# قسم عرض التعليقات والردود #}
+                <div
+                  class="reviews-section"
+                  style="
+                    margin-top: 1rem;
+                    padding-top: 1rem;
+                    border-top: 1px solid #e5e7eb;
+                  "
+                >
+                  <h4>Yorumlar ve Cevaplar</h4>
+                  {% for reservation in house.prefetched_reservations %}
+                    {% for review in reservation.review_set.all %}
+                      <div class="review" style="margin-bottom:0.75rem;">
+                        <p><strong>Puan:</strong> {{ review.rating }} / 5</p>
+                        {% if review.comment %}
+                          <p><strong>Yorum:</strong> {{ review.comment }}</p>
+                        {% endif %}
+                        {% if review.reply %}
+                          <p><strong>Sahibin Cevabı:</strong> {{ review.reply }}</p>
+                        {% endif %}
+                      </div>
+                    {% endfor %}
+                  {% empty %}
+                    <p>Henüz yorum yok.</p>
+                  {% endfor %}
+                </div>
+              </div>
+            </div>
+          {% empty %}
+            <p>Kayıtlı ev bulunamadı.</p>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        const searchInput = document.querySelector('.search-input');
+        const cards = document.querySelectorAll('.house-card');
+
+        // عند الضغط على Enter في الصندوق
+        document
+          .querySelector('.search-filter form')
+          .addEventListener('submit', (e) => {
+            e.preventDefault();
+            filterCards();
+          });
+
+        // فلترة مباشرة أثناء الكتابة
+        searchInput.addEventListener('input', () => {
+          filterCards();
+        });
+
+        function filterCards() {
+          const query = searchInput.value.trim().toLowerCase();
+
+          cards.forEach((card) => {
+            const detailsText = card
+              .querySelector('.house-details')
+              .innerText.toLowerCase();
+            const matchesQuery = !query || detailsText.includes(query);
+            card.style.display = matchesQuery ? '' : 'none';
+          });
+        }
+      });
+    </script>
+  </body>
+</html>

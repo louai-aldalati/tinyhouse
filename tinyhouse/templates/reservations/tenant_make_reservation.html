@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rezervasyon Yapma</title>
+    <link rel="stylesheet" href="{% static 'css/reservations/tenant_make_reservation.css' %}">
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'tenant_sidebar.html' %}
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Rezervasyon Yapma</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}
+                        <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="detail-card">
+                <div class="detail-content">
+                    <h3 class="house-title">Evde Ne Kadar Kalacaksınız</h3>
+                    <div class="calendar-section">
+                        <h3 class="calendar-title">
+                            Giriş Ve Çıkış Tarihleri, {{ house.start_date }} İle {{ house.end_date }} Arasında Olmalı
+                        </h3>
+                        <div id="calendar"></div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="form-group">
+                            <label for="start-date">Giriş Tarihi</label>
+                            <input type="date" id="start-date" name="start_date" class="search-input"
+                                   value="{{ request.POST.start_date }}" />
+                        </div>
+                        <div class="form-group">
+                            <label for="end-date">Çıkış Tarihi</label>
+                            <input type="date" id="end-date" name="end_date" class="search-input"
+                                   value="{{ request.POST.end_date }}" />
+                        </div>
+                        {% if amount %}
+                            <p>Toplam Tutar: {{ amount }}₺</p>
+                        {% endif %}
+                        <button type="submit" name="action" value="calculate" class="button-primary">Fiyat Bil</button>
+                        <button type="submit" name="action" value="reserve" class="button-primary">Rezervasyon Talebi Yap</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.4/index.global.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var events = {{ calendar_events_json|safe }};
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'tr',
+                events: events,
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,dayGridWeek'
+                }
+            });
+            calendar.render();
+        });
+    </script>
+</body>
+</html>

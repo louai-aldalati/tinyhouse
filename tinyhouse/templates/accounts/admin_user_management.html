@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kullanıcı Yönetimi</title>
+    <link rel="stylesheet" href="{% static 'css/accounts/admin_user_management.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'admin_sidebar.html' %}
+
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Kullanıcı Yönetimi</h2>
+
+            <!-- عرض الرسائل إن وجدت -->
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}
+                        <li>{{ m }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <!-- عرض الأخطاء إن وجدت -->
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}
+                        <li>{{ e }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+
+            <section class="mb-6">
+                <div class="flex justify-between items-center mb-4">
+                    <input type="text" placeholder="Kullanıcı Ara..." class="search-input" />
+                    <button class="btn-primary"
+                            onclick="window.location.href='{% url 'admin_user_add' %}';">
+                        Yeni Kullanıcı Ekle
+                    </button>
+                </div>
+            </section>
+
+            <section>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Kullanıcı Adı</th>
+                            <th>E-posta</th>
+                            <th>Rol</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for profile in profiles %}
+                            <tr>
+                                <td>{{ profile.user.username }}</td>
+                                <td>{{ profile.user.email }}</td>
+                                <td>
+                                    {% if profile.role == 'kiraci' %}
+                                        Kiracı
+                                    {% elif profile.role == 'ev_sahibi' %}
+                                        Ev Sahibi
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if profile.user.is_active %}
+                                        Aktif
+                                    {% else %}
+                                        Pasif
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <button class="btn-secondary"
+                                            onclick="window.location.href='{% url 'admin_user_edit' profile.pk %}';">
+                                        Düzenle
+                                    </button>
+                                    <form method="post" style="display:inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="pk" value="{{ profile.pk }}">
+                                        <button type="submit" class="btn-secondary"
+                                                onclick="return confirm('Bu kullanıcıyı silmek istediğinize emin misiniz?')">
+                                            Sil
+                                        </button>
+                                    </form>
+                                    <form method="post" style="display:inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="deactivate">
+                                        <input type="hidden" name="pk" value="{{ profile.pk }}">
+                                        <button type="submit" class="btn-secondary"
+                                                onclick="return confirm('Bu kullanıcıyı pasife almak istediğinize emin misiniz?')">
+                                            Pasife Al
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="6" class="text-center">Gösterilecek kullanıcı yok.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const searchInput = document.querySelector('.search-input');
+            const tableRows = document.querySelectorAll('tbody tr');
+
+            searchInput.addEventListener('input', function() {
+                const filter = this.value.toLowerCase();
+                tableRows.forEach(row => {
+                    const text = row.textContent.toLowerCase();
+                    row.style.display = text.includes(filter) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

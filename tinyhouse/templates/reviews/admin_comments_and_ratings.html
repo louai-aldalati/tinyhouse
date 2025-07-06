@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Yorum Yönetimi</title>
+    <link rel="stylesheet" href="{% static 'css/reviews/admin_comments_and_ratings.css' %}">
+</head>
+<body>
+    <div class="wrapper">
+        {% include 'admin_sidebar.html' %}
+        <div class="dashboard-container">
+            <h2 class="dashboard-title">Yorum Yönetimi</h2>
+
+            {% if messages %}
+                <ul class="alert alert-success">
+                    {% for m in messages %}<li>{{ m }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+            {% if errors %}
+                <ul class="alert alert-error">
+                    {% for e in errors %}<li>{{ e }}</li>{% endfor %}
+                </ul>
+            {% endif %}
+
+            <div class="filter-bar">
+                <form method="get">
+                    <input
+                        type="text"
+                        name="q"
+                        placeholder="Ara: yorum, kullanıcı, ilan başlığı"
+                        value="{{ search_query }}"
+                    />
+                </form>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#ID</th>
+                            <th>İlan Başlığı</th>
+                            <th>Ev Sahibi</th>
+                            <th>Kiracı</th>
+                            <th>Yorum &amp; Puan</th>
+                            <th>Ev Sahibi Cevabı</th>
+                            <th>Durum</th>
+                            <th>İşlemler</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for review in reviews %}
+                            <tr>
+                                <td>{{ review.id }}</td>
+                                <td>
+                                    {{ review.reservation.tiny_house.title }}
+                                    — {{ review.reservation.tiny_house.location }}
+                                </td>
+                                <td>
+                                    {{ review.reservation.tiny_house.owner.get_full_name|default:review.reservation.tiny_house.owner.username }}
+                                </td>
+                                <td>
+                                    {{ review.reservation.tenant.get_full_name|default:review.reservation.tenant.username }}
+                                </td>
+                                <td>
+                                    <p>“{{ review.comment }}”</p>
+                                    <p><strong>Puan:</strong> {{ review.rating }} / 5</p>
+                                </td>
+                                <td>{{ review.reply|default:"-" }}</td>
+                                <td>
+                                    {% if review.is_active %}
+                                        <span class="status-active">Aktif</span>
+                                    {% else %}
+                                        <span class="status-inactive">Pasif</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form method="post" class="action-form">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="review_id" value="{{ review.id }}">
+                                        {% if review.is_active %}
+                                            <input type="hidden" name="action" value="deactivate">
+                                            <button class="btn btn-delete" type="submit">Pasife Al</button>
+                                        {% else %}
+                                            <input type="hidden" name="action" value="activate">
+                                            <button class="btn btn-approve" type="submit">Aktifleştir</button>
+                                        {% endif %}
+                                    </form>
+                                </td>
+                            </tr>
+                        {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center">Yorum bulunamadı.</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.querySelector('.filter-bar input[name="q"]');
+            const tableRows = document.querySelectorAll('.table-container tbody tr');
+
+            searchInput.addEventListener('input', function() {
+                const filterText = this.value.trim().toLowerCase();
+                tableRows.forEach(row => {
+                    const rowText = row.textContent.toLowerCase();
+                    row.style.display = rowText.includes(filterText) ? '' : 'none';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

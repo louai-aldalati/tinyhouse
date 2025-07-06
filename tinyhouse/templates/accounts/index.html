@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="tr" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoş Geldiniz | TinyHouse</title>
+    <link rel="stylesheet" href="{% static 'css/accounts/index.css' %}">
+</head>
+<body>
+    <div class="choice-container">
+        <h1 class="text-2xl font-bold mb-6">TinyHouse Rezervasyon</h1>
+
+        <!-- عرض الرسائل إن وجدت -->
+        {% if messages %}
+            <ul class="alert alert-success">
+                {% for m in messages %}
+                    <li>{{ m }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <!-- عرض الأخطاء إن وجدت -->
+        {% if errors %}
+            <ul class="alert alert-error">
+                {% for e in errors %}
+                    <li>{{ e }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <p>Rolünüzü seçin:</p>
+        <button onclick="location.href='{% url 'sign_in' %}?role=tenant'" class="choice-button">
+            Kiracı (Kiralayan)
+        </button>
+        <button onclick="location.href='{% url 'sign_in' %}?role=owner'" class="choice-button">
+            Ev Sahibi
+        </button>
+        <button onclick="location.href='{% url 'sign_in' %}?role=admin'" class="choice-button">
+            Yönetici (Admin)
+        </button>
+    </div>
+</body>
+</html>
