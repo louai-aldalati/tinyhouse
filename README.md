@@ -2,7 +2,6 @@
 <html lang="tr">
 <head>
   <meta charset="UTF-8">
-  <title>Tiny House Rezervasyon ve Yönetim Sistemi</title>
 </head>
 <body>
 
